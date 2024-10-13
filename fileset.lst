@@ -1,0 +1,12 @@
+./rtl/multiplexer.v
+./rtl/register.v
+./rtl/counter.v
+./rtl/comparator.v
+./rtl/chacha_BLOCK_ROTATION.v
+./rtl/chacha_QUARTER_ROUND.v
+./rtl/chacha_BLOCK_datapath.v
+./rtl/chacha_BLOCK_fsm.v
+./rtl/chacha_BLOCK.v
+
+
+./tb/tb_chacha_BLOCK.v
