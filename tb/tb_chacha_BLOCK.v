@@ -10,7 +10,7 @@ module tb_chacha_BLOCK();
     reg start_i;
 
     wire done_o, ready_o;
-    wire [16*32-1 : 0] keystream_o;
+    wire [8-1 : 0] keystream_o;
 
     chacha_BLOCK #(.ROUND_COUNT(10)) DUT (
         .clk_i(clk_i),
@@ -51,6 +51,7 @@ module tb_chacha_BLOCK();
         rst_i <= 1'b0;
     end
     
+    integer i;
     initial begin
         start_i   <= 1'b1;
         counter_i <= 32'h00000001; 
@@ -58,7 +59,26 @@ module tb_chacha_BLOCK();
         nonce_i   <= 96'h09000000_4a000000_00000000;
         
         wait (done_o == 1'b1);
-        print_block(keystream_o); 
+
+        $display("INITIAL BLOCK");
+        print_block(DUT.datapath_inst.SAVED_INITIAL_BLOCK_d);
+        $display("AFTER RUNNING 10 DOUBLE QUARTER ROUNDS");
+        print_block(DUT.datapath_inst.OUTPUT_BLOCK_d);
+        
+        @(posedge clk_i);
+        $display("KEY STREAM : ");
+        for (i = 0; i  < 16*4; i = i + 1) begin
+            @(posedge clk_i);
+            $write("%x : ", keystream_o);
+        end  
+        $display("EOK");
+        #100
         $finish;
     end
+
+    initial begin
+        $dumpfile("signals.vcd");
+        $dumpvars(0, tb_chacha_BLOCK);
+    end
+
 endmodule

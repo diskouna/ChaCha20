@@ -11,15 +11,16 @@ module chacha_BLOCK_datapath #(
     input wire [3*32-1 : 0]   nonce_i,
     input wire [1*32-1 : 0]   counter_i,
    
-    output wire [16*32-1 : 0]   keystream_o,
-    
+    output wire [8-1 : 0] keystream_o, 
+   
     input  wire               init_block_i,
     input  wire               rotate_block_i,
     input  wire               rotate_direction_i,
     input  wire               set_qr_input_i,     
     input  wire               get_qr_output_i,  
     input  wire               init_counter_i,
-    input  wire               incr_counter_i,  
+    input  wire               incr_counter_i,
+    input  wire               serialize_i,  
     output wire               last_round_o
 );
 
@@ -30,6 +31,7 @@ module chacha_BLOCK_datapath #(
     
     // INPUT signals
     wire [16*32-1 : 0] INITIAL_BLOCK_q, PREVIOUS_OUTPUT_BLOCK_q;
+    wire [16*32-1 : 0] SAVED_INITIAL_BLOCK_d;
     wire [16*32-1 : 0] INPUT_BLOCK_q, INPUT_BLOCK_d;    
     
     // OUTPUT signals
@@ -45,6 +47,14 @@ module chacha_BLOCK_datapath #(
                              };
         
     assign PREVIOUS_OUTPUT_BLOCK_q = OUTPUT_BLOCK_d; 
+
+    register #(.DATA_BITS(32*16)) SAVED_INITIAL_BLOCK_REG_inst (
+        .clk_i(clk_i),
+        .rst_i(rst_i),
+        .load_i(init_block_i),
+        .data_i(INITIAL_BLOCK_q),
+        .data_o(SAVED_INITIAL_BLOCK_d)
+    );
     
     mux2to1 #(.DATA_BITS(32*16)) INPUT_MUX_inst (
         .sel_i(init_block_i),
@@ -93,9 +103,17 @@ module chacha_BLOCK_datapath #(
         .data_i(OUTPUT_BLOCK_q),
         .data_o(OUTPUT_BLOCK_d)
     );
-
-    assign keystream_o = OUTPUT_BLOCK_d;
-   
+    
+    chacha_ADDER_SERIALIZER ADDER_SERIALIZER_inst (
+        .clk_i(clk_i),
+        .rst_i(rst_i),
+        .input_valid_i(serialize_i),
+        .INITIAL_BLOCK_i (SAVED_INITIAL_BLOCK_d),
+        .FINAL_BLOCK_i (OUTPUT_BLOCK_d),
+        .keystream_o (keystream_o),
+        .keystream_valid_o ()
+    );
+ 
     counter #(.DATA_BITS($clog2(ROUND_COUNT+1))) ROUND_COUNTER_inst (
         .clk_i(clk_i),
         .rst_i(rst_i),

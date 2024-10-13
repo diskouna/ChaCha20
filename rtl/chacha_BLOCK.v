@@ -10,7 +10,8 @@ module chacha_BLOCK #(
     input wire [3*32-1 : 0]   nonce_i,
     input wire [1*32-1 : 0]   counter_i,
    
-    output wire [16*32-1 : 0]   keystream_o,
+    output wire [8-1 : 0]   keystream_o,
+
     input  wire  start_i,
     output wire   done_o,   
     output wire   ready_o
@@ -24,6 +25,7 @@ module chacha_BLOCK #(
     wire   last_round;
     wire   init_counter;
     wire   incr_counter;
+    wire   serialize;
 
     chacha_BLOCK_fsm fsm_inst (
         .clk_i(clk_i),
@@ -38,6 +40,7 @@ module chacha_BLOCK #(
         .get_qr_output_o(get_qr_output),    
         .init_counter_o(init_counter),
         .incr_counter_o(incr_counter),
+        .serialize_o(serialize),
         .last_round_i(last_round)
     );
 
@@ -55,6 +58,7 @@ module chacha_BLOCK #(
         .get_qr_output_i(get_qr_output),    
         .init_counter_i(init_counter),
         .incr_counter_i(incr_counter),
+        .serialize_i(serialize),
         .last_round_o(last_round)
     );
 

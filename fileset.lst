@@ -1,3 +1,5 @@
+./rtl/piso_shifter.v
+./rtl/adder.v
 ./rtl/multiplexer.v
 ./rtl/register.v
 ./rtl/counter.v
@@ -6,7 +8,7 @@
 ./rtl/chacha_QUARTER_ROUND.v
 ./rtl/chacha_BLOCK_datapath.v
 ./rtl/chacha_BLOCK_fsm.v
+./rtl/chacha_ADDER_SERIALIZER.v
 ./rtl/chacha_BLOCK.v
-
 
 ./tb/tb_chacha_BLOCK.v

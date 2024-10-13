@@ -15,6 +15,7 @@ module chacha_BLOCK_fsm (
     output reg   get_qr_output_o,    
     output reg   init_counter_o,
     output reg   incr_counter_o,
+    output reg   serialize_o,
     input  wire  last_round_i
 );
     
@@ -29,8 +30,8 @@ module chacha_BLOCK_fsm (
                        COL_ROUND  = (1'b1 << COL_ROUND_bit),
                        DIAG_ROUND = (1'b1 << DIAG_ROUND_bit),
                        DONE       = (1'b1 << DONE_bit),
-                       WAIT1       = (1'b1 << WAIT1_bit),
-                       WAIT2       = (1'b1 << WAIT2_bit);
+                       WAIT1      = (1'b1 << WAIT1_bit),
+                       WAIT2      = (1'b1 << WAIT2_bit);
 
    reg [5 : 0] cur_state, nxt_state;
 
@@ -86,6 +87,7 @@ module chacha_BLOCK_fsm (
             end
             
             cur_state[DONE_bit]: begin
+                serialize_o = 1'b1;
                 done_o = 1'b1;
                 nxt_state = IDLE;
             end

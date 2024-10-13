@@ -1,7 +1,8 @@
 `default_nettype none
 
 module counter #(
-    parameter integer DATA_BITS = 32
+    parameter integer DATA_BITS = 32,
+    parameter integer INITIAL_VALUE = 0
 )(
     input  wire                           clk_i,
     input  wire                           rst_i,
@@ -11,8 +12,8 @@ module counter #(
 );
 
     always @(posedge clk_i)
-        if(rst_i)        counter_o <= 0;
-        else if (init_i) counter_o <= 0;
+        if(rst_i)        counter_o <= INITIAL_VALUE;
+        else if (init_i) counter_o <= INITIAL_VALUE;
         else if (incr_i) counter_o <= counter_o + 1'b1;
 
 endmodule
